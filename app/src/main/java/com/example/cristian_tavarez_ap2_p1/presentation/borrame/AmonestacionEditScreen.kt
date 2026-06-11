@@ -2,21 +2,48 @@ package com.example.cristian_tavarez_ap2_p1.presentation.borrame
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AmonestacionFormScreen(viewModel: AmonestacionViewModel, onNavigateBack: () -> Unit) {
+fun AmonestacionEditScreen(
+    viewModel: AmonestacionViewModel,
+    onNavigateBack: () -> Unit
+) {
     val context = LocalContext.current
+    val esEdicion = viewModel.amonestacionSeleccionada != null
+
     var errorNombres by remember { mutableStateOf(false) }
     var errorRazon by remember { mutableStateOf(false) }
     var errorMonto by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(if (viewModel.amonestacionSeleccionada == null) "Nueva Amonestación" else "Editar Amonestación", style = MaterialTheme.typography.headlineMedium)
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Volver atrás"
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = if (!esEdicion) "Nueva Amonestación" else "Editar Amonestación",
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = viewModel.nombresInput,
@@ -59,8 +86,23 @@ fun AmonestacionFormScreen(viewModel: AmonestacionViewModel, onNavigateBack: () 
                 }
             },
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-        ) { Text("Guardar Registro") }
+        ) {
+            Text(if (!esEdicion) "Guardar Registro" else "Aplicar Cambios")
+        }
 
-        TextButton(onClick = onNavigateBack, modifier = Modifier.fillMaxWidth()) { Text("Cancelar") }
+        if (esEdicion) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    viewModel.eliminar(viewModel.amonestacionSeleccionada!!)
+                    Toast.makeText(context, "Registro eliminado", Toast.LENGTH_SHORT).show()
+                    onNavigateBack()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Eliminar Amonestación", color = Color.White)
+            }
+        }
     }
 }
