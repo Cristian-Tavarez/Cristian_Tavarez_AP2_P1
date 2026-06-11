@@ -1,12 +1,10 @@
 package com.example.cristian_tavarez_ap2_p1.presentation.borrame
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -53,34 +51,30 @@ fun AmonestacionListScreen(
 
             LazyColumn(modifier = Modifier.weight(1f).padding(top = 16.dp)) {
                 items(lista) { item ->
-                    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                        Row(
-                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column {
-                                Text(item.nombres, style = MaterialTheme.typography.titleMedium)
-                                Text("Motivo: ${item.razon}")
-                                Text("Penalidad: $${item.monto}", color = Color.Red)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                viewModel.prepararParaEditar(item)
+                                onNavigateToForm()
                             }
-                            Row {
-                                IconButton(onClick = {
-                                    viewModel.prepararParaEditar(item)
-                                    onNavigateToForm()
-                                }) {
-                                    Icon(Icons.Default.Edit, "Edit")
-                                }
-
-                                IconButton(onClick = {
-                                    viewModel.eliminar(item)
-                                }) {
-                                    Icon(Icons.Default.Delete, "Delete", tint = Color.Red)
-                                }
-                            }
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+                            Text(item.nombres, style = MaterialTheme.typography.titleMedium)
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text("Motivo: ${item.razon}", style = MaterialTheme.typography.bodyMedium)
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Penalidad: $${String.format("%.2f", item.monto)}",
+                                color = Color.Red,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }
             }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
